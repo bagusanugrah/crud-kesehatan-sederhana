@@ -1,0 +1,24 @@
+name: CI/CD CRUD Kesehatan
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Deploy ke EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@13.236.146.222 << 'EOF'
+          cd /var/www/crud-kesehatan
+          sudo git pull origin main
+          sudo docker compose down
+          sudo docker compose up -d --build
+          sudo docker compose exec -T app php artisan migrate --force
+          EOF
