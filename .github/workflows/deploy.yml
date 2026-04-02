@@ -20,7 +20,8 @@ jobs:
           sudo git pull origin main
           sudo docker compose down
           sudo docker compose up -d --build
-          sleep 15
+          sleep 20
           sudo docker compose exec -T app php artisan key:generate --force
+          sudo docker compose exec -T app php artisan optimize:clear
           sudo docker compose exec -T app php artisan migrate --force
           EOF
